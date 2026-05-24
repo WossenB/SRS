@@ -14,10 +14,12 @@ class EmployeeList extends Component
 
     public function render()
     {
+        // SRS: Performance optimization for 500+ employees
         $employees = Employee::where('first_name', 'like', '%' . $this->search . '%')
             ->orWhere('last_name', 'like', '%' . $this->search . '%')
             ->orWhere('employee_id', 'like', '%' . $this->search . '%')
-            ->paginate(10);
+            ->orderBy('id')
+            ->cursorPaginate(15);
 
         return view('livewire.employee-list', [
             'employees' => $employees
