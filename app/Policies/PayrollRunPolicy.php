@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\PayrollRun;
 use App\Models\User;
+use App\Models\PayrollRun;
 
 class PayrollRunPolicy
 {
@@ -17,13 +17,28 @@ class PayrollRunPolicy
         return $user->hasAnyRole(['Super Admin', 'HR Admin']);
     }
 
-    public function initiate(User $user): bool
+    public function update(User $user, PayrollRun $payrollRun)
     {
-        return $user->hasPermissionTo('payroll.initiate');
+        // Only HR Admin or Super Admin can update
+        if (!$user->hasAnyRole(['HR Admin', 'Super Admin'])) {
+            return false;
+        }
+
+        // Cannot edit locked payroll runs
+        if ($payrollRun->status === 'locked') {
+            return false;
+        }
+
+        return true;
     }
 
-    public function approve(User $user, PayrollRun $payrollRun): bool
+    public function lock(User $user, PayrollRun $payrollRun)
     {
-        return $user->hasPermissionTo('payroll.approve');
+        return $user->hasAnyRole(['HR Admin', 'Super Admin']);
+    }
+
+    public function delete(User $user, PayrollRun $payrollRun)
+    {
+        return false; // Never allow deletion
     }
 }

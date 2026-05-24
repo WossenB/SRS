@@ -24,7 +24,7 @@ class Employee extends Model
      */
     public function setBasicSalaryAttribute($value)
     {
-        $this->attributes['basic_salary'] = Crypt::encryptString($value);
+        $this->attributes['basic_salary'] = Crypt::encryptString((string)$value);
     }
 
     public function getBasicSalaryAttribute($value)
@@ -38,7 +38,7 @@ class Employee extends Model
 
     public function setBankDetailsAttribute($value)
     {
-        $this->attributes['bank_details'] = Crypt::encryptString($value);
+        $this->attributes['bank_details'] = Crypt::encryptString((string)$value);
     }
 
     public function getBankDetailsAttribute($value)
@@ -53,7 +53,7 @@ class Employee extends Model
 
     public function setTinNumberAttribute($value)
     {
-        $this->attributes['tin_number'] = Crypt::encryptString($value);
+        $this->attributes['tin_number'] = Crypt::encryptString((string)$value);
     }
 
     public function getTinNumberAttribute($value)
@@ -84,5 +84,10 @@ class Employee extends Model
     public function supervisor()
     {
         return $this->belongsTo(Employee::class, 'supervisor_id');
+    }
+
+    public function managedEmployees()
+    {
+        return $this->hasMany(Employee::class, 'supervisor_id');
     }
 }

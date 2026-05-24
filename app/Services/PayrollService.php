@@ -66,6 +66,23 @@ class PayrollService
         });
     }
 
+    public function lockPayrollRun(PayrollRun $payrollRun, int $userId)
+    {
+        return DB::transaction(function () use ($payrollRun, $userId) {
+            $payrollRun->status = 'locked';
+            // We can't add approved_by/approved_at columns easily here without migration update,
+            // but we use the status field and status logs as required.
+            $payrollRun->save();
+
+            $payrollRun->logStatusChange('locked', 'draft', [
+                'approved_by' => $userId,
+                'action' => 'Final approval'
+            ]);
+
+            return $payrollRun;
+        });
+    }
+
     private function calculateEmployeePayroll(Employee $employee, array $slabs, ?PensionRate $pension)
     {
         $basicSalary = (float) $employee->basic_salary;
