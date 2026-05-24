@@ -33,6 +33,27 @@ class PerformanceService
         });
     }
 
+    public function submitSelfAssessment(PerformanceReview $review, array $data)
+    {
+        $review->update(['self_assessment_data' => json_encode($data)]);
+        $review->logStatusChange('manager_review', $review->status);
+    }
+
+    public function submitManagerReview(PerformanceReview $review, array $data)
+    {
+        $review->update(['manager_review_data' => json_encode($data)]);
+        $review->logStatusChange('hr_calibration', $review->status);
+    }
+
+    public function calibrate(PerformanceReview $review, float $finalRating, string $remarks)
+    {
+        $review->update([
+            'final_rating' => $finalRating,
+            'hr_remarks' => $remarks
+        ]);
+        // Status remains in hr_calibration until published
+    }
+
     public function publishReview(PerformanceReview $review)
     {
         $review->logStatusChange('published', $review->status);

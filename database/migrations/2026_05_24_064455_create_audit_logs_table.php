@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->dateTime('created_at')->nullable()->index();
-            // Immutable: no updated_at
         });
     }
 

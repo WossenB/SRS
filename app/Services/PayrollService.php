@@ -21,9 +21,9 @@ class PayrollService
     public function initiateRun(string $periodMonth, string $runType = 'regular', int $userId)
     {
         return DB::transaction(function () use ($periodMonth, $runType, $userId) {
-            // Idempotency check
-            if (PayrollRun::where('period_month', $periodMonth)->where('run_type', $runType)->exists()) {
-                throw new \Exception("Payroll run for this period already exists.");
+            // Idempotency check: Block duplicate regular runs
+            if ($runType === 'regular' && PayrollRun::where('period_month', $periodMonth)->where('run_type', 'regular')->exists()) {
+                throw new \Exception("Regular payroll run for this period already exists.");
             }
 
             // Snapshot tax slabs and pension rates
@@ -58,7 +58,6 @@ class PayrollService
             }
 
             // SRS: Rounding Drift Validation
-            // sum of individual net should match total net within small epsilon
             $sumOfItems = PayrollItem::where('payroll_run_id', $payrollRun->id)->sum('net_pay');
             if (abs($sumOfItems - $totalNet) > 0.05) {
                 throw new \Exception("Rounding drift detected. Audit required.");
@@ -73,17 +72,50 @@ class PayrollService
         });
     }
 
+    /**
+     * Initiate a supplementary run for corrections or exit settlements.
+     * SRS Ref: FR-PAY-05
+     */
+    public function initiateSupplementaryRun(string $periodMonth, array $employeeIds, int $userId)
+    {
+        return DB::transaction(function () use ($periodMonth, $employeeIds, $userId) {
+            $slabs = TaxSlab::all()->toArray();
+            $pension = PensionRate::where('is_active', true)->first();
+
+            $payrollRun = PayrollRun::create([
+                'period_month' => $periodMonth,
+                'run_type' => 'supplementary',
+                'processed_by' => $userId,
+                'status' => 'draft',
+                'input_snapshot' => json_encode([
+                    'tax_slabs' => $slabs,
+                    'pension_rate' => $pension ? $pension->toArray() : null,
+                ]),
+            ]);
+
+            $employees = Employee::whereIn('id', $employeeIds)->get();
+            $totalGross = 0; $totalNet = 0;
+
+            foreach ($employees as $employee) {
+                $item = $this->calculateEmployeePayroll($employee, $slabs, $pension);
+                $item['payroll_run_id'] = $payrollRun->id;
+                $item['employee_id'] = $employee->id;
+                PayrollItem::create($item);
+                $totalGross += $item['gross_salary'];
+                $totalNet += $item['net_pay'];
+            }
+
+            $payrollRun->update(['total_gross' => $totalGross, 'total_net' => $totalNet]);
+            return $payrollRun;
+        });
+    }
+
     public function lockPayrollRun(PayrollRun $payrollRun, int $userId)
     {
         return DB::transaction(function () use ($payrollRun, $userId) {
             $payrollRun->status = 'locked';
             $payrollRun->save();
-
-            $payrollRun->logStatusChange('locked', 'draft', [
-                'approved_by' => $userId,
-                'action' => 'Final approval'
-            ]);
-
+            $payrollRun->logStatusChange('locked', 'draft', ['approved_by' => $userId]);
             return $payrollRun;
         });
     }
@@ -91,25 +123,15 @@ class PayrollService
     private function calculateEmployeePayroll(Employee $employee, array $slabs, ?PensionRate $pension)
     {
         $basicSalary = (float) $employee->basic_salary;
-
-        $benefits = EmployeeBenefit::where('employee_id', $employee->id)
-            ->where('is_active', true)
-            ->with('catalog')
-            ->get();
-
-        $taxableBenefits = 0;
-        $nonTaxableBenefits = 0;
+        $benefits = EmployeeBenefit::where('employee_id', $employee->id)->where('is_active', true)->with('catalog')->get();
+        $taxableBenefits = 0; $nonTaxableBenefits = 0;
 
         foreach ($benefits as $benefit) {
-            if ($benefit->catalog->is_taxable) {
-                $taxableBenefits += (float)$benefit->amount;
-            } else {
-                $nonTaxableBenefits += (float)$benefit->amount;
-            }
+            if ($benefit->catalog->is_taxable) $taxableBenefits += (float)$benefit->amount;
+            else $nonTaxableBenefits += (float)$benefit->amount;
         }
 
-        $pensionEmployee = 0;
-        $pensionEmployer = 0;
+        $pensionEmployee = 0; $pensionEmployer = 0;
         if ($pension) {
             $pensionEmployee = Money::roundPension($basicSalary * ($pension->employee_rate / 100));
             $pensionEmployer = Money::roundPension($basicSalary * ($pension->employer_rate / 100));
@@ -117,9 +139,7 @@ class PayrollService
 
         $grossSalary = $basicSalary + $taxableBenefits + $nonTaxableBenefits;
         $taxableIncome = ($basicSalary + $taxableBenefits) - $pensionEmployee;
-
         $incomeTax = $this->calculateIncomeTax($taxableIncome, $slabs);
-
         $netPay = Money::roundNet($taxableIncome - $incomeTax + $nonTaxableBenefits);
 
         return [
