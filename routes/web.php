@@ -16,6 +16,7 @@ use App\Livewire\Payroll\PayrollRunList;
 use App\Livewire\Training\CourseList;
 use App\Livewire\Offboarding\ExitRecordList;
 use App\Livewire\ESS\MyBenefits;
+use App\Livewire\ReportsDashboard;
 use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
@@ -58,6 +59,9 @@ Route::middleware([
 
     // Offboarding
     Route::get('/offboarding', ExitRecordList::class)->name('offboarding.index')->middleware('can:employee.purge');
+
+    // Reports
+    Route::get('/reports', ReportsDashboard::class)->name('reports.index')->middleware('can:report.export');
 
     // Documents
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');

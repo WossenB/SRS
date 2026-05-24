@@ -12,6 +12,10 @@
             @can('payroll.initiate')
             <li><a href="/payroll" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Payroll Runs</a></li>
             @endcan
+
+            @can('report.export')
+            <li><a href="/reports" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Analytics</a></li>
+            @endcan
         </ul>
 
         <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">Self Service</div>
@@ -41,12 +45,5 @@
             <li><a href="/offboarding" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Offboarding</a></li>
             @endcan
         </ul>
-
-        @role('Super Admin')
-        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">System</div>
-        <ul class="space-y-1">
-            <li><a href="/settings" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-mono text-xs">Settings</a></li>
-        </ul>
-        @endrole
     </nav>
 </aside>

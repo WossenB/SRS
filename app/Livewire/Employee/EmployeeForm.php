@@ -12,26 +12,20 @@ use Illuminate\Support\Facades\DB;
 
 class EmployeeForm extends Component
 {
+    public $step = 1;
     public $employeeId;
-    public $first_name, $last_name, $email, $employee_id_number, $basic_salary;
-    public $department_id, $position_id, $hire_date, $date_of_birth;
 
-    public function mount($id = null)
-    {
-        if ($id) {
-            $employee = Employee::findOrFail($id);
-            $this->employeeId = $id;
-            $this->first_name = $employee->first_name;
-            $this->last_name = $employee->last_name;
-            $this->email = $employee->email;
-            $this->employee_id_number = $employee->employee_id;
-            $this->basic_salary = $employee->basic_salary;
-            $this->department_id = $employee->department_id;
-            $this->position_id = $employee->position_id;
-            $this->hire_date = $employee->hire_date?->format('Y-m-d');
-            $this->date_of_birth = $employee->date_of_birth?->format('Y-m-d');
-        }
-    }
+    // Step 1: Personal
+    public $first_name, $last_name, $email, $employee_id_number, $date_of_birth, $phone;
+
+    // Step 2: Job
+    public $department_id, $position_id, $hire_date, $supervisor_id;
+
+    // Step 3: Financial
+    public $basic_salary, $tin_number, $bank_details;
+
+    public function nextStep() { $this->step++; }
+    public function prevStep() { $this->step--; }
 
     public function save()
     {
@@ -39,45 +33,31 @@ class EmployeeForm extends Component
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'employee_id_number' => 'required',
             'basic_salary' => 'required|numeric',
         ]);
 
         DB::transaction(function () {
-            if ($this->employeeId) {
-                $employee = Employee::findOrFail($this->employeeId);
-                $employee->update([
-                    'first_name' => $this->first_name,
-                    'last_name' => $this->last_name,
-                    'email' => $this->email,
-                    'employee_id' => $this->employee_id_number,
-                    'basic_salary' => $this->basic_salary,
-                    'department_id' => $this->department_id,
-                    'position_id' => $this->position_id,
-                    'hire_date' => $this->hire_date,
-                    'date_of_birth' => $this->date_of_birth,
-                ]);
-            } else {
-                $user = User::create([
-                    'name' => "{$this->first_name} {$this->last_name}",
-                    'email' => $this->email,
-                    'password' => Hash::make('password123'),
-                ]);
-                $user->assignRole('Employee');
+            $user = User::updateOrCreate(['email' => $this->email], [
+                'name' => "{$this->first_name} {$this->last_name}",
+                'password' => Hash::make('password123'),
+            ]);
 
-                Employee::create([
-                    'user_id' => $user->id,
-                    'first_name' => $this->first_name,
-                    'last_name' => $this->last_name,
-                    'email' => $this->email,
-                    'employee_id' => $this->employee_id_number,
-                    'basic_salary' => $this->basic_salary,
-                    'department_id' => $this->department_id,
-                    'position_id' => $this->position_id,
-                    'hire_date' => $this->hire_date,
-                    'date_of_birth' => $this->date_of_birth,
-                ]);
-            }
+            if (!$user->hasRole('Employee')) $user->assignRole('Employee');
+
+            Employee::updateOrCreate(['user_id' => $user->id], [
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'email' => $this->email,
+                'employee_id' => $this->employee_id_number ?? 'EMP-' . uniqid(),
+                'phone' => $this->phone,
+                'basic_salary' => $this->basic_salary,
+                'department_id' => $this->department_id,
+                'position_id' => $this->position_id,
+                'hire_date' => $this->hire_date,
+                'date_of_birth' => $this->date_of_birth,
+                'tin_number' => $this->tin_number,
+                'bank_details' => $this->bank_details,
+            ]);
         });
 
         return redirect()->route('employees.index');
@@ -88,6 +68,7 @@ class EmployeeForm extends Component
         return view('livewire.employee.employee-form', [
             'departments' => Department::all(),
             'positions' => Position::all(),
+            'employees' => Employee::all(),
         ])->layout('layouts.app');
     }
 }
