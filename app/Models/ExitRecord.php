@@ -18,4 +18,9 @@ class ExitRecord extends Model
         'separation_date' => 'date',
         'clearance_checklist' => 'array',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }

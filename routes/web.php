@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard;
 use App\Livewire\EmployeeList;
+use App\Livewire\Leave\LeaveIndex;
 use App\Livewire\Leave\LeaveRequestForm;
 use App\Livewire\Leave\LeaveApprovalManager;
+use App\Livewire\Timesheet\TimesheetIndex;
 use App\Livewire\Timesheet\TimesheetGrid;
 use App\Livewire\Timesheet\TimesheetApproval;
 use App\Livewire\Recruitment\JobOpeningList;
@@ -27,12 +29,12 @@ Route::middleware([
     Route::get('/employees', EmployeeList::class)->name('employees.index')->middleware('can:employee.create');
 
     // Leave Management
-    Route::get('/leave', function() { return 'My Leave List View'; })->name('leave.index');
+    Route::get('/leave', LeaveIndex::class)->name('leave.index');
     Route::get('/leave/request', LeaveRequestForm::class)->name('leave.request');
     Route::get('/leave/approvals', LeaveApprovalManager::class)->name('leave.approvals')->middleware('can:leave.approve_manager');
 
     // Timesheet Management
-    Route::get('/timesheets', function() { return 'My Timesheets List View'; })->name('timesheet.index');
+    Route::get('/timesheets', TimesheetIndex::class)->name('timesheet.index');
     Route::get('/timesheets/{timesheet}/edit', TimesheetGrid::class)->name('timesheet.edit');
     Route::get('/timesheets/approvals', TimesheetApproval::class)->name('timesheet.approvals')->middleware('can:timesheet.approve_supervisor');
 

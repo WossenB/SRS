@@ -12,4 +12,9 @@ class PerformanceReview extends Model
     use HasAuditLog, HasStatusHistory, HasOptimisticLocking;
 
     protected $guarded = ['id', 'version'];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 }

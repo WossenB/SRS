@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Employee;
 use App\Policies\EmployeePolicy;
+use App\Observers\EmployeeObserver;
 use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Employee::class, EmployeePolicy::class);
+        Employee::observe(EmployeeObserver::class);
     }
 }
