@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('employee_id')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->json('contact_info')->nullable();
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
 
             $table->text('address')->nullable();
             $table->dateTime('date_of_birth')->nullable();
@@ -33,6 +34,9 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+            // FULLTEXT for search - MySQL only
+            // $table->fulltext(['first_name', 'last_name']);
         });
     }
 

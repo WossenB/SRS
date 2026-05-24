@@ -30,7 +30,17 @@ class OffboardingService
             }
         }
 
-        $exit->logStatusChange('completed', $exit->status);
-        $exit->employee->update(['status' => 'terminated']);
+        return DB::transaction(function () use ($exit) {
+            $exit->logStatusChange('completed', $exit->status);
+            $exit->employee->update(['status' => 'terminated']);
+
+            // Deactivate User Account
+            $exit->employee->user->update([
+                'email_verified_at' => null, // effectively blocks login if using verified middleware
+            ]);
+
+            // In a real system we might also logout all sessions
+            return $exit;
+        });
     }
 }
