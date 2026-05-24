@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard;
 use App\Livewire\EmployeeList;
+use App\Livewire\Employee\EmployeeForm;
 use App\Livewire\Leave\LeaveIndex;
 use App\Livewire\Leave\LeaveRequestForm;
 use App\Livewire\Leave\LeaveApprovalManager;
@@ -10,6 +11,7 @@ use App\Livewire\Timesheet\TimesheetIndex;
 use App\Livewire\Timesheet\TimesheetGrid;
 use App\Livewire\Timesheet\TimesheetApproval;
 use App\Livewire\Recruitment\JobOpeningList;
+use App\Livewire\Recruitment\JobOpeningForm;
 use App\Livewire\Payroll\PayrollRunList;
 use App\Livewire\Training\CourseList;
 use App\Livewire\Offboarding\ExitRecordList;
@@ -27,6 +29,8 @@ Route::middleware([
 
     // Employee Management
     Route::get('/employees', EmployeeList::class)->name('employees.index')->middleware('can:employee.create');
+    Route::get('/employees/create', EmployeeForm::class)->name('employees.create')->middleware('can:employee.create');
+    Route::get('/employees/{id}/edit', EmployeeForm::class)->name('employees.edit')->middleware('can:employee.edit');
 
     // Leave Management
     Route::get('/leave', LeaveIndex::class)->name('leave.index');
@@ -40,6 +44,7 @@ Route::middleware([
 
     // Recruitment
     Route::get('/recruitment', JobOpeningList::class)->name('recruitment.index')->middleware('can:applicant.manage');
+    Route::get('/recruitment/create', JobOpeningForm::class)->name('recruitment.create')->middleware('can:applicant.manage');
 
     // Payroll Management
     Route::get('/payroll', PayrollRunList::class)->name('payroll.index')->middleware('can:payroll.initiate');
