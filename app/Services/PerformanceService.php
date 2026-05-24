@@ -37,4 +37,14 @@ class PerformanceService
     {
         $review->logStatusChange('published', $review->status);
     }
+
+    public function acknowledgeReview(PerformanceReview $review, int $userId)
+    {
+        if ($review->employee->user_id !== $userId) {
+            throw new \Exception("Unauthorized acknowledgment.");
+        }
+
+        $review->update(['acknowledged_at' => now()]);
+        $review->logStatusChange('acknowledged', $review->status);
+    }
 }

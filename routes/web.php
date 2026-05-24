@@ -15,6 +15,7 @@ use App\Livewire\Recruitment\JobOpeningForm;
 use App\Livewire\Payroll\PayrollRunList;
 use App\Livewire\Training\CourseList;
 use App\Livewire\Offboarding\ExitRecordList;
+use App\Livewire\ESS\MyBenefits;
 use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
@@ -48,6 +49,9 @@ Route::middleware([
 
     // Payroll Management
     Route::get('/payroll', PayrollRunList::class)->name('payroll.index')->middleware('can:payroll.initiate');
+
+    // ESS
+    Route::get('/my-benefits', MyBenefits::class)->name('ess.benefits');
 
     // Training
     Route::get('/training', CourseList::class)->name('training.index');

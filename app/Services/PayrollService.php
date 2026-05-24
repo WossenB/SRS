@@ -57,6 +57,13 @@ class PayrollService
                 $totalNet += $item['net_pay'];
             }
 
+            // SRS: Rounding Drift Validation
+            // sum of individual net should match total net within small epsilon
+            $sumOfItems = PayrollItem::where('payroll_run_id', $payrollRun->id)->sum('net_pay');
+            if (abs($sumOfItems - $totalNet) > 0.05) {
+                throw new \Exception("Rounding drift detected. Audit required.");
+            }
+
             $payrollRun->update([
                 'total_gross' => $totalGross,
                 'total_net' => $totalNet,
@@ -70,8 +77,6 @@ class PayrollService
     {
         return DB::transaction(function () use ($payrollRun, $userId) {
             $payrollRun->status = 'locked';
-            // We can't add approved_by/approved_at columns easily here without migration update,
-            // but we use the status field and status logs as required.
             $payrollRun->save();
 
             $payrollRun->logStatusChange('locked', 'draft', [
@@ -87,7 +92,6 @@ class PayrollService
     {
         $basicSalary = (float) $employee->basic_salary;
 
-        // 1. Benefits (Taxable and Non-taxable)
         $benefits = EmployeeBenefit::where('employee_id', $employee->id)
             ->where('is_active', true)
             ->with('catalog')
@@ -98,13 +102,12 @@ class PayrollService
 
         foreach ($benefits as $benefit) {
             if ($benefit->catalog->is_taxable) {
-                $taxableBenefits += $benefit->amount;
+                $taxableBenefits += (float)$benefit->amount;
             } else {
-                $nonTaxableBenefits += $benefit->amount;
+                $nonTaxableBenefits += (float)$benefit->amount;
             }
         }
 
-        // 2. Pension
         $pensionEmployee = 0;
         $pensionEmployer = 0;
         if ($pension) {
@@ -112,13 +115,11 @@ class PayrollService
             $pensionEmployer = Money::roundPension($basicSalary * ($pension->employer_rate / 100));
         }
 
-        // 3. Tax Calculation
         $grossSalary = $basicSalary + $taxableBenefits + $nonTaxableBenefits;
         $taxableIncome = ($basicSalary + $taxableBenefits) - $pensionEmployee;
 
         $incomeTax = $this->calculateIncomeTax($taxableIncome, $slabs);
 
-        // 4. Net Pay
         $netPay = Money::roundNet($taxableIncome - $incomeTax + $nonTaxableBenefits);
 
         return [
