@@ -87,6 +87,7 @@ Route::middleware([
     // ESS & Benefits
     Route::get('/my-benefits', MyBenefits::class)->name('ess.benefits');
     Route::get('/my-documents', MyDocuments::class)->name('ess.documents');
+    Route::get('/my-payslips', \App\Livewire\ESS\MyPayslips::class)->name('ess.payslips');
     Route::get('/profile', PersonalProfile::class)->name('ess.profile');
 
     // Benefits Management

@@ -30,6 +30,7 @@
                     <x-nav-link href="/profile" icon="user-circle" label="My Profile" />
                     <x-nav-link href="/leave" icon="calendar" label="My Leave" />
                     <x-nav-link href="/timesheets" icon="clock" label="Timesheets" />
+                    <x-nav-link href="/my-payslips" icon="cash" label="My Payslips" />
                     <x-nav-link href="/my-benefits" icon="gift" label="Benefits" />
                     <x-nav-link href="/my-documents" icon="folder" label="Documents" />
                 </ul>
