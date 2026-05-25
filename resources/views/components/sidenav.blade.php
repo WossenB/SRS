@@ -1,60 +1,60 @@
-<aside class="w-64 bg-gray-900 text-gray-100 min-h-screen shadow-xl">
-    <div class="p-6 text-2xl font-black text-indigo-400 border-b border-gray-800 tracking-tighter">BIRRAMA HR</div>
-    <nav class="mt-6 px-4">
-        <div class="text-xs font-bold text-gray-500 uppercase mb-4 px-2 tracking-widest">Core</div>
-        <ul class="space-y-1">
-            <li><a href="/dashboard" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Dashboard</a></li>
+<aside class="w-64 bg-slate-900 text-slate-300 h-screen flex flex-col flex-shrink-0 shadow-2xl">
+    <div class="p-8 flex items-center gap-3">
+        <div class="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white font-black">B</div>
+        <span class="text-xl font-extrabold tracking-tighter text-white">BIRRAMA</span>
+    </div>
 
-            @can('employee.create')
-            <li><a href="/employees" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Employee Directory</a></li>
-            @endcan
+    <nav class="flex-1 px-4 overflow-y-auto custom-scrollbar">
+        <div class="space-y-8">
+            <div>
+                <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Core Platform</div>
+                <ul class="space-y-1">
+                    <x-nav-link href="/dashboard" icon="home" label="Overview" />
+                    @can('employee.create')
+                        <x-nav-link href="/employees" icon="users" label="Personnel" />
+                    @endcan
+                    @can('payroll.initiate')
+                        <x-nav-link href="/payroll" icon="cash" label="Payroll" />
+                    @endcan
+                </ul>
+            </div>
 
-            @can('payroll.initiate')
-            <li><a href="/payroll" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-bold text-indigo-300">Payroll Engine</a></li>
-            @endcan
+            <div>
+                <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Self Service</div>
+                <ul class="space-y-1">
+                    <x-nav-link href="/leave" icon="calendar" label="My Leave" />
+                    <x-nav-link href="/timesheets" icon="clock" label="Timesheets" />
+                    <x-nav-link href="/my-benefits" icon="gift" label="Benefits" />
+                </ul>
+            </div>
 
-            @can('report.export')
-            <li><a href="/reports" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">System Reports</a></li>
-            @endcan
-        </ul>
+            @canany(['leave.approve_manager', 'timesheet.approve_supervisor'])
+            <div>
+                <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Management</div>
+                <ul class="space-y-1">
+                    @can('leave.approve_manager') <x-nav-link href="/leave/approvals" icon="check-badge" label="Approvals" /> @endcan
+                </ul>
+            </div>
+            @endcanany
 
-        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">Self Service</div>
-        <ul class="space-y-1">
-            <li><a href="/leave" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">My Leave</a></li>
-            <li><a href="/timesheets" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">My Timesheets</a></li>
-            <li><a href="/my-benefits" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">My Benefits</a></li>
-        </ul>
-
-        @canany(['leave.approve_manager', 'timesheet.approve_supervisor'])
-        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">Management</div>
-        <ul class="space-y-1">
-            @can('leave.approve_manager')
-            <li><a href="/leave/approvals" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Leave Approvals</a></li>
-            @endcan
-            @can('timesheet.approve_supervisor')
-            <li><a href="/timesheets/approvals" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Timesheet Approvals</a></li>
-            @endcan
-            @can('benefit.catalog')
-            <li><a href="/benefits/assign" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Assign Benefits</a></li>
-            @endcan
-        </ul>
-        @endcanany
-
-        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">Talent & Operations</div>
-        <ul class="space-y-1">
-            <li><a href="/recruitment" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Recruitment</a></li>
-            <li><a href="/training/assignments" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Training Tracks</a></li>
-            <li><a href="/performance" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-medium">Reviews</a></li>
-            @can('employee.purge')
-            <li><a href="/offboarding" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Offboarding</a></li>
-            @endcan
-        </ul>
-
-        @role('Super Admin')
-        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">System</div>
-        <ul class="space-y-1">
-            <li><a href="/settings" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-mono text-xs">Settings</a></li>
-        </ul>
-        @endrole
+            <div>
+                <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Organization</div>
+                <ul class="space-y-1">
+                    <x-nav-link href="/recruitment" icon="briefcase" label="Recruitment" />
+                    <x-nav-link href="/training/assignments" icon="academic-cap" label="Learning" />
+                    @can('employee.purge') <x-nav-link href="/offboarding" icon="user-minus" label="Offboarding" /> @endcan
+                </ul>
+            </div>
+        </div>
     </nav>
+
+    <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+        <form method="POST" action="{{ route('logout') }}" x-data>
+            @csrf
+            <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-all font-bold text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Sign Out
+            </button>
+        </form>
+    </div>
 </aside>
