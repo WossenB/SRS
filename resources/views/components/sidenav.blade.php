@@ -10,11 +10,11 @@
             @endcan
 
             @can('payroll.initiate')
-            <li><a href="/payroll" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Payroll Runs</a></li>
+            <li><a href="/payroll" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-bold text-indigo-300">Payroll Engine</a></li>
             @endcan
 
             @can('report.export')
-            <li><a href="/reports" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Analytics</a></li>
+            <li><a href="/reports" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">System Reports</a></li>
             @endcan
         </ul>
 
@@ -34,16 +34,27 @@
             @can('timesheet.approve_supervisor')
             <li><a href="/timesheets/approvals" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Timesheet Approvals</a></li>
             @endcan
+            @can('benefit.catalog')
+            <li><a href="/benefits/assign" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Assign Benefits</a></li>
+            @endcan
         </ul>
         @endcanany
 
         <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">Talent & Operations</div>
         <ul class="space-y-1">
             <li><a href="/recruitment" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Recruitment</a></li>
-            <li><a href="/training" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Training</a></li>
+            <li><a href="/training/assignments" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Training Tracks</a></li>
+            <li><a href="/performance" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-medium">Reviews</a></li>
             @can('employee.purge')
             <li><a href="/offboarding" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition">Offboarding</a></li>
             @endcan
         </ul>
+
+        @role('Super Admin')
+        <div class="text-xs font-bold text-gray-500 uppercase mt-8 mb-4 px-2 tracking-widest">System</div>
+        <ul class="space-y-1">
+            <li><a href="/settings" class="flex items-center px-4 py-2 hover:bg-gray-800 rounded-md transition font-mono text-xs">Settings</a></li>
+        </ul>
+        @endrole
     </nav>
 </aside>

@@ -13,7 +13,7 @@ class JobOpeningList extends Component
     public function render()
     {
         return view('livewire.recruitment.job-opening-list', [
-            'jobs' => JobOpening::latest()->paginate(10)
+            'jobs' => JobOpening::with('department')->latest()->paginate(10)
         ])->layout('layouts.app');
     }
 }
