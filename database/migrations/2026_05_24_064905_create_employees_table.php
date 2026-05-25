@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->json('contact_info')->nullable();
 
-            // Standard columns instead of virtual for SQLite compatibility during development/demo
-            $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            // Mandate 3: Virtual generated columns for primary_phone, primary_email extracted from JSON for fast indexing.
+            // Using ->virtualAs() which is supported in MySQL 5.7+ and SQLite 3.31.0+
+            $table->string('email')->virtualAs('json_unquote(json_extract(contact_info, "$.email"))')->unique();
+            $table->string('phone')->virtualAs('json_unquote(json_extract(contact_info, "$.phone"))')->nullable();
 
             $table->text('address')->nullable();
             $table->dateTime('date_of_birth')->nullable();

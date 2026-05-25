@@ -50,7 +50,7 @@
                 <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Organization</div>
                 <ul class="space-y-1">
                     <x-nav-link href="/recruitment" icon="briefcase" label="Recruitment" />
-                    <x-nav-link href="/training/assignments" icon="academic-cap" label="Learning" />
+                    <x-nav-link href="/training" icon="academic-cap" label="Learning" />
                     @can('employee.purge') <x-nav-link href="/offboarding" icon="user-minus" label="Offboarding" /> @endcan
                 </ul>
             </div>
@@ -61,6 +61,8 @@
                 <ul class="space-y-1">
                     <x-nav-link href="/audit" icon="shield-check" label="Audit Trail" />
                     <x-nav-link href="/settings" icon="cog" label="Settings" />
+                    <x-nav-link href="/settings/holidays" icon="calendar" label="Holidays" />
+                    <x-nav-link href="/settings/schedules" icon="clock" label="Schedules" />
                 </ul>
             </div>
             @endrole

@@ -15,6 +15,7 @@ use App\Livewire\Timesheet\TimesheetApproval;
 use App\Livewire\Recruitment\JobOpeningList;
 use App\Livewire\Recruitment\JobOpeningForm;
 use App\Livewire\Recruitment\JobOpeningDetails;
+use App\Livewire\Recruitment\ApplicantForm;
 use App\Livewire\Payroll\PayrollRunList;
 use App\Livewire\Payroll\PayrollRunCreate;
 use App\Livewire\Payroll\PayrollRunDetails;
@@ -39,6 +40,10 @@ use App\Livewire\Benefit\BenefitCatalogForm;
 use App\Livewire\Benefit\BenefitCatalogList;
 use App\Livewire\ReportsDashboard;
 use App\Livewire\Settings\SystemSettings;
+use App\Livewire\Settings\PublicHolidayList;
+use App\Livewire\Settings\PublicHolidayForm;
+use App\Livewire\Settings\WorkScheduleList;
+use App\Livewire\Settings\WorkScheduleForm;
 use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
@@ -72,6 +77,7 @@ Route::middleware([
     Route::get('/recruitment', JobOpeningList::class)->name('recruitment.index')->middleware('can:applicant.manage');
     Route::get('/recruitment/create', JobOpeningForm::class)->name('recruitment.create')->middleware('can:applicant.manage');
     Route::get('/recruitment/{job}', JobOpeningDetails::class)->name('recruitment.show')->middleware('can:applicant.manage');
+    Route::get('/recruitment/{job}/apply', ApplicantForm::class)->name('recruitment.apply')->middleware('can:applicant.manage');
 
     // Payroll Management
     Route::get('/payroll', PayrollRunList::class)->name('payroll.index')->middleware('can:payroll.initiate');
@@ -113,6 +119,10 @@ Route::middleware([
 
     // Settings & Audit
     Route::get('/settings', SystemSettings::class)->name('settings.index')->middleware('role:Super Admin');
+    Route::get('/settings/holidays', PublicHolidayList::class)->name('settings.holidays.index')->middleware('role:Super Admin');
+    Route::get('/settings/holidays/create', PublicHolidayForm::class)->name('settings.holidays.create')->middleware('role:Super Admin');
+    Route::get('/settings/schedules', WorkScheduleList::class)->name('settings.schedules.index')->middleware('role:Super Admin');
+    Route::get('/settings/schedules/create', WorkScheduleForm::class)->name('settings.schedules.create')->middleware('role:Super Admin');
     Route::get('/audit', AuditLogList::class)->name('audit.index')->middleware('role:Super Admin');
 
     // Documents

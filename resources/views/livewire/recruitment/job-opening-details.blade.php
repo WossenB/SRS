@@ -4,7 +4,10 @@
             <h2 class="text-3xl font-black text-gray-900">{{ $job->title }}</h2>
             <p class="text-gray-500 font-medium mt-1">{{ $job->department->name }} · {{ $applicants->count() }} Applicants</p>
         </div>
-        <span class="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest">{{ $job->status }}</span>
+        <div class="flex gap-2">
+            <a href="{{ route('recruitment.apply', $job->id) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm">Add Applicant</a>
+            <span class="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest">{{ $job->status }}</span>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

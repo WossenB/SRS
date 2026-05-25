@@ -12,7 +12,10 @@ return new class extends Migration
             $table->id();
             $table->string('action_type')->index();
             $table->uuid('correlation_id')->nullable()->index();
+
+            // Mandate 2: ON DELETE SET NULL on user references to preserve history
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+
             $table->json('before_json')->nullable();
             $table->json('after_json')->nullable();
             $table->string('ip_address', 45)->nullable();

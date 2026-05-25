@@ -39,7 +39,7 @@ class EmployeeForm extends Component
         DB::transaction(function () {
             $user = User::updateOrCreate(['email' => $this->email], [
                 'name' => "{$this->first_name} {$this->last_name}",
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(\Illuminate\Support\Str::random(16)),
             ]);
 
             if (!$user->hasRole('Employee')) $user->assignRole('Employee');
