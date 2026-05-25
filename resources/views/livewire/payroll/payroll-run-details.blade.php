@@ -8,11 +8,12 @@
             </div>
         </div>
         <div class="flex gap-2">
-            <button wire:click="export" class="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2">
-                <span>Excel Export</span>
+            <button wire:click="exportBank" class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition">Bank File</button>
+            <button wire:click="export" class="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 text-sm font-bold hover:bg-green-700 transition">
+                <span>Excel Report</span>
             </button>
             @if($run->status !== 'locked')
-                <button wire:click="lock" class="bg-red-600 text-white px-4 py-2 rounded font-bold" onclick="confirm('Lock payroll? No further changes allowed.') || event.stopImmediatePropagation()">Lock & Approve</button>
+                <button wire:click="lock" class="bg-red-600 text-white px-4 py-2 rounded font-bold text-sm shadow-lg shadow-red-100 hover:bg-red-700 transition" onclick="confirm('Lock payroll? No further changes allowed.') || event.stopImmediatePropagation()">Lock & Approve</button>
             @endif
         </div>
     </div>
@@ -23,7 +24,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Employee</th>
                     <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Gross</th>
-                    <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Tax</th>
+                    <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase text-red-500">Tax</th>
                     <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">Pension</th>
                     <th class="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase font-black text-gray-900">Net Pay</th>
                 </tr>
@@ -32,10 +33,10 @@
                 @foreach($items as $item)
                     <tr>
                         <td class="px-4 py-3 text-sm font-medium">{{ $item->employee->first_name }} {{ $item->employee->last_name }}</td>
-                        <td class="px-4 py-3 text-sm text-right">{{ number_format($item->gross_salary, 2) }}</td>
-                        <td class="px-4 py-3 text-sm text-right text-red-600">{{ number_format($item->income_tax, 2) }}</td>
-                        <td class="px-4 py-3 text-sm text-right">{{ number_format($item->pension_employee, 2) }}</td>
-                        <td class="px-4 py-3 text-sm text-right font-bold">{{ number_format($item->net_pay, 2) }}</td>
+                        <td class="px-4 py-3 text-sm text-right font-mono">{{ number_format($item->gross_salary, 2) }}</td>
+                        <td class="px-4 py-3 text-sm text-right text-red-600 font-mono">{{ number_format($item->income_tax, 2) }}</td>
+                        <td class="px-4 py-3 text-sm text-right font-mono">{{ number_format($item->pension_employee, 2) }}</td>
+                        <td class="px-4 py-3 text-sm text-right font-bold text-indigo-600 font-mono">{{ number_format($item->net_pay, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

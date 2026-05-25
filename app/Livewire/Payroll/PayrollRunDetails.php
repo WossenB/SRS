@@ -7,8 +7,10 @@ use App\Models\PayrollRun;
 use App\Models\PayrollItem;
 use App\Services\PayrollService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PayrollExport;
+use App\Exports\BankExport;
 
 class PayrollRunDetails extends Component
 {
@@ -29,7 +31,6 @@ class PayrollRunDetails extends Component
 
     public function export()
     {
-        // SRS: Log export to audit log
         DB::table('audit_logs')->insert([
             'action_type' => 'payroll_export',
             'user_id' => Auth::id(),
@@ -38,6 +39,11 @@ class PayrollRunDetails extends Component
         ]);
 
         return Excel::download(new PayrollExport($this->run->id), "payroll_{$this->run->period_month}.xlsx");
+    }
+
+    public function exportBank()
+    {
+        return Excel::download(new BankExport($this->run->id), "bank_transfer_{$this->run->period_month}.xlsx");
     }
 
     public function render()

@@ -5,6 +5,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\EmployeeList;
 use App\Livewire\Employee\EmployeeForm;
 use App\Livewire\Employee\EmployeeDetails;
+use App\Livewire\Employee\DocumentVerificationList;
 use App\Livewire\Leave\LeaveIndex;
 use App\Livewire\Leave\LeaveRequestForm;
 use App\Livewire\Leave\LeaveApprovalManager;
@@ -26,9 +27,16 @@ use App\Livewire\Performance\PerformanceReviewDetail;
 use App\Livewire\Offboarding\ExitRecordList;
 use App\Livewire\Offboarding\OffboardingForm;
 use App\Livewire\Offboarding\ExitRecordDetail;
+use App\Livewire\Announcements\AnnouncementList;
+use App\Livewire\Announcements\AnnouncementForm;
+use App\Livewire\Notifications\NotificationList;
+use App\Livewire\System\AuditLogList;
 use App\Livewire\ESS\MyBenefits;
+use App\Livewire\ESS\MyDocuments;
 use App\Livewire\ESS\BenefitAssignmentForm;
 use App\Livewire\ESS\PersonalProfile;
+use App\Livewire\Benefit\BenefitCatalogForm;
+use App\Livewire\Benefit\BenefitCatalogList;
 use App\Livewire\ReportsDashboard;
 use App\Livewire\Settings\SystemSettings;
 use App\Http\Controllers\DocumentController;
@@ -46,6 +54,7 @@ Route::middleware([
     // Employee Management
     Route::get('/employees', EmployeeList::class)->name('employees.index')->middleware('can:employee.create');
     Route::get('/employees/create', EmployeeForm::class)->name('employees.create')->middleware('can:employee.create');
+    Route::get('/employees/verify-docs', DocumentVerificationList::class)->name('employees.verify_docs')->middleware('can:document.verify');
     Route::get('/employees/{employee}', EmployeeDetails::class)->name('employees.show')->middleware('can:employee.create');
     Route::get('/employees/{id}/edit', EmployeeForm::class)->name('employees.edit')->middleware('can:employee.edit');
 
@@ -71,7 +80,12 @@ Route::middleware([
 
     // ESS & Benefits
     Route::get('/my-benefits', MyBenefits::class)->name('ess.benefits');
+    Route::get('/my-documents', MyDocuments::class)->name('ess.documents');
     Route::get('/profile', PersonalProfile::class)->name('ess.profile');
+
+    // Benefits Management
+    Route::get('/benefits/catalog', BenefitCatalogList::class)->name('benefits.index')->middleware('can:benefit.catalog');
+    Route::get('/benefits/create', BenefitCatalogForm::class)->name('benefits.create')->middleware('can:benefit.catalog');
     Route::get('/benefits/assign', BenefitAssignmentForm::class)->name('benefits.assign')->middleware('can:benefit.catalog');
 
     // Training
@@ -84,6 +98,11 @@ Route::middleware([
     Route::get('/performance', PerformanceReviewList::class)->name('performance.index');
     Route::get('/performance/{review}', PerformanceReviewDetail::class)->name('performance.show');
 
+    // Announcements & Notifications
+    Route::get('/announcements', AnnouncementList::class)->name('announcements.index');
+    Route::get('/announcements/create', AnnouncementForm::class)->name('announcements.create')->middleware('can:system.manage');
+    Route::get('/notifications', NotificationList::class)->name('notifications.index');
+
     // Offboarding
     Route::get('/offboarding', ExitRecordList::class)->name('offboarding.index')->middleware('can:employee.purge');
     Route::get('/offboarding/initiate/{employeeId}', OffboardingForm::class)->name('offboarding.initiate')->middleware('can:employee.purge');
@@ -92,8 +111,9 @@ Route::middleware([
     // Reports
     Route::get('/reports', ReportsDashboard::class)->name('reports.index')->middleware('can:report.export');
 
-    // Settings
+    // Settings & Audit
     Route::get('/settings', SystemSettings::class)->name('settings.index')->middleware('role:Super Admin');
+    Route::get('/audit', AuditLogList::class)->name('audit.index')->middleware('role:Super Admin');
 
     // Documents
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
