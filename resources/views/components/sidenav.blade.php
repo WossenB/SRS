@@ -16,12 +16,16 @@
                     @can('payroll.initiate')
                         <x-nav-link href="/payroll" icon="cash" label="Payroll" />
                     @endcan
+                    @can('report.export')
+                        <x-nav-link href="/reports" icon="chart-bar" label="Analytics" />
+                    @endcan
                 </ul>
             </div>
 
             <div>
                 <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Self Service</div>
                 <ul class="space-y-1">
+                    <x-nav-link href="/profile" icon="user-circle" label="My Profile" />
                     <x-nav-link href="/leave" icon="calendar" label="My Leave" />
                     <x-nav-link href="/timesheets" icon="clock" label="Timesheets" />
                     <x-nav-link href="/my-benefits" icon="gift" label="Benefits" />
@@ -33,6 +37,7 @@
                 <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Management</div>
                 <ul class="space-y-1">
                     @can('leave.approve_manager') <x-nav-link href="/leave/approvals" icon="check-badge" label="Approvals" /> @endcan
+                    @can('benefit.catalog') <x-nav-link href="/benefits/assign" icon="plus-circle" label="Assign Benefits" /> @endcan
                 </ul>
             </div>
             @endcanany
@@ -41,7 +46,7 @@
                 <div class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Organization</div>
                 <ul class="space-y-1">
                     <x-nav-link href="/recruitment" icon="briefcase" label="Recruitment" />
-                    <x-nav-link href="/training/assignments" icon="academic-cap" label="Learning" />
+                    <x-nav-link href="/training" icon="academic-cap" label="Learning" />
                     @can('employee.purge') <x-nav-link href="/offboarding" icon="user-minus" label="Offboarding" /> @endcan
                 </ul>
             </div>

@@ -17,11 +17,13 @@
             <tbody class="divide-y">
                 @foreach($exits as $exit)
                     <tr>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $exit->employee->first_name }}</td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $exit->employee->first_name }} {{ $exit->employee->last_name }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $exit->separation_date->format('Y-m-d') }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $exit->exit_type }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $exit->status }}</td>
-                        <td class="px-6 py-4 text-right"><button class="text-indigo-600">View</button></td>
+                        <td class="px-6 py-4 text-sm"><span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold">{{ strtoupper($exit->status) }}</span></td>
+                        <td class="px-6 py-4 text-right">
+                             <a href="{{ route('offboarding.show', $exit->id) }}" class="text-indigo-600 font-bold text-sm">View Clearance</a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

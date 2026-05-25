@@ -18,13 +18,17 @@ use App\Livewire\Payroll\PayrollRunList;
 use App\Livewire\Payroll\PayrollRunCreate;
 use App\Livewire\Payroll\PayrollRunDetails;
 use App\Livewire\Training\CourseList;
+use App\Livewire\Training\CourseForm;
 use App\Livewire\Training\TrainingAssignmentForm;
 use App\Livewire\Training\TrainingAssignmentList;
 use App\Livewire\Performance\PerformanceReviewList;
+use App\Livewire\Performance\PerformanceReviewDetail;
 use App\Livewire\Offboarding\ExitRecordList;
 use App\Livewire\Offboarding\OffboardingForm;
+use App\Livewire\Offboarding\ExitRecordDetail;
 use App\Livewire\ESS\MyBenefits;
 use App\Livewire\ESS\BenefitAssignmentForm;
+use App\Livewire\ESS\PersonalProfile;
 use App\Livewire\ReportsDashboard;
 use App\Livewire\Settings\SystemSettings;
 use App\Http\Controllers\DocumentController;
@@ -67,19 +71,23 @@ Route::middleware([
 
     // ESS & Benefits
     Route::get('/my-benefits', MyBenefits::class)->name('ess.benefits');
+    Route::get('/profile', PersonalProfile::class)->name('ess.profile');
     Route::get('/benefits/assign', BenefitAssignmentForm::class)->name('benefits.assign')->middleware('can:benefit.catalog');
 
     // Training
     Route::get('/training', CourseList::class)->name('training.index');
+    Route::get('/training/create', CourseForm::class)->name('training.create');
     Route::get('/training/assign', TrainingAssignmentForm::class)->name('training.assign');
     Route::get('/training/assignments', TrainingAssignmentList::class)->name('training.assignments');
 
     // Performance
     Route::get('/performance', PerformanceReviewList::class)->name('performance.index');
+    Route::get('/performance/{review}', PerformanceReviewDetail::class)->name('performance.show');
 
     // Offboarding
     Route::get('/offboarding', ExitRecordList::class)->name('offboarding.index')->middleware('can:employee.purge');
     Route::get('/offboarding/initiate/{employeeId}', OffboardingForm::class)->name('offboarding.initiate')->middleware('can:employee.purge');
+    Route::get('/offboarding/{exit}', ExitRecordDetail::class)->name('offboarding.show')->middleware('can:employee.purge');
 
     // Reports
     Route::get('/reports', ReportsDashboard::class)->name('reports.index')->middleware('can:report.export');
